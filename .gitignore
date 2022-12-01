@@ -14,4 +14,5 @@ src/models/baseline_cnn_model_xception_3
 src/models/baseline_cnn_model_xception_4
 src/models/baseline_cnn_model_xception_5
 src/models/init_resnet50
+*.zip
 *test*
