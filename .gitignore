@@ -1,2 +1,17 @@
+.gitignore
 /data
 /test
+__pycache__/
+src/models/baseline_cnn_model
+src/models/baseline_cnn_model_2
+src/models/baseline_cnn_model_3
+src/models/baseline_cnn_model_4
+src/models/baseline_cnn_model_5
+src/models/baseline_cnn_model_3
+src/models/baseline_cnn_model_xception_1
+src/models/baseline_cnn_model_xception_2
+src/models/baseline_cnn_model_xception_3
+src/models/baseline_cnn_model_xception_4
+src/models/baseline_cnn_model_xception_5
+src/models/init_resnet50
+*test*
