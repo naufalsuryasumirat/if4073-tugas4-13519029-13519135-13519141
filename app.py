@@ -1,7 +1,11 @@
 import sys
+import numpy as np
 import PyQt5.QtCore as qtc
 import PyQt5.QtWidgets as qtw
 import src.fruits_classification_cnn as cls_cnn_model
+import src.fruits_classification_improc as improc
+from PIL import Image, ImageQt
+from matplotlib.cm import get_cmap
 from PyQt5.QtWidgets import (
   QApplication, QPushButton, QMainWindow, QLabel, QTextEdit, QFileDialog)
 from PyQt5.QtGui import QFont, QPixmap
@@ -11,8 +15,9 @@ class Window(QMainWindow):
     super().__init__()
     self.setStyleSheet('background-color: #F4F2E9')
     self.setWindowTitle('Klasifikasi Buah')
-    self.setGeometry(0, 0, 1000, 800)
-    self.setFixedSize(1000, 800)
+    self.setGeometry(0, 0, 1400, 800)
+    self.setMinimumSize(1000, 800)
+    # self.setFixedSize(1400, 800)
 
     # Labels
     self._lbl_title = QLabel('IF4073-Tugas4-Klasifikasi Buah', self)
@@ -84,6 +89,15 @@ class Window(QMainWindow):
     self._img_input = QLabel(self)
     self._img_input.move(10, 70)
     
+    self._img_segmt = QLabel(self)
+    self._img_segmt.move(276, 70)
+    
+    self._img_grays = QLabel(self)
+    self._img_grays.move(542, 70)
+    
+    self._img_imhog = QLabel(self)
+    self._img_imhog.move(808, 70)
+    
     self._cur_filepath = None
 
     self.show()
@@ -93,7 +107,7 @@ class Window(QMainWindow):
     if not filepath[0]: return
     self._cur_filepath = filepath[0]
     inp_pixmap = QPixmap(self._cur_filepath)
-    inp_pixmap = inp_pixmap.scaled(224, 224)
+    inp_pixmap = inp_pixmap.scaled(64*4, 128*4)
     self._img_input.resize(inp_pixmap.width(), inp_pixmap.height())
     self._img_input.setPixmap(inp_pixmap)
     return
@@ -104,7 +118,25 @@ class Window(QMainWindow):
     self._lbl_dl_predict_res.setText(f"{label}")
     self._lbl_dl_confidence_res.setText(
       f"{'; '.join([f'{lbl}={conf*100:.2f}%' for lbl, conf in confidence])}")
-    print(label, confidence)
+    
+    img = improc.load_image(self._cur_filepath)
+    segmented = improc.proc_segment(img)
+    segmented_show = ImageQt.ImageQt(Image.fromarray(segmented, mode='RGB'))
+    self._img_segmt.resize(64*4, 128*4)
+    self._img_segmt.setPixmap(QPixmap.fromImage(segmented_show))
+    
+    grayscale = improc.gray_image(segmented)
+    grayscale_show = ImageQt.ImageQt(Image.fromarray(np.uint8(grayscale*255), mode='L'))
+    self._img_grays.resize(64*4, 128*4)
+    self._img_grays.setPixmap(QPixmap.fromImage(grayscale_show))
+    
+    cm_viridis = get_cmap('viridis')
+    fd, hog_im = improc.proc_hog(grayscale)
+    hog_im = cm_viridis(hog_im)
+    hog_show = ImageQt.ImageQt(Image.fromarray(np.uint8(hog_im*255)))
+    self._img_imhog.resize(64*4, 128*4)
+    self._img_imhog.setPixmap(QPixmap.fromImage(hog_show))
+    
     return
 
 if __name__ == '__main__':
