@@ -176,6 +176,7 @@ class Window(QMainWindow):
     ft_color, (red, grn, blu) = improc.proc_color(segmented)
     ranges = range(256)
     self._img_buf = io.BytesIO()
+    plt.clf()
     plt.plot(ranges, red, ranges, grn, ranges, blu)
     plt.title('Color Histogram of Segmented Image')
     plt.legend(['red', 'green', 'blue'], loc='upper left')
